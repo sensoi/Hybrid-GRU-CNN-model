@@ -1,0 +1,93 @@
+# Hybrid GRU-CNN Intrusion Detection
+
+**Short description**
+A compact implementation of a hybrid 1D-CNN + GRU neural network for network intrusion classification (e.g., Benign vs DDoS and multi-class). This repo contains preprocessing, scaling & clipping for outliers, training and evaluation code for a CSV dataset (`balanced_dataset.csv`).
+
+---
+
+## Files
+
+* `Hybrid GRU-CNN.ipynb` — Colab notebook with full preprocessing and model training code (the notebook you provided).
+* `balanced_dataset.csv` — example dataset (not included). Replace with your own CSV file following the same column naming convention.
+
+## Key features
+
+* Robust preprocessing: handles NaN, inf, extreme outliers (clipping at 99th percentile) and median imputation.
+* Scaling using `RobustScaler` to reduce sensitivity to outliers.
+* Hybrid model combining 1D Convolutional layers (feature extraction) with GRU layers (temporal patterns) for sequence classification.
+* Support for binary and multi-class classification (softmax output for multi-class).
+
+## Quick repo README (one-line)
+
+`Hybrid 1D-CNN + GRU model for network intrusion detection with robust preprocessing and evaluation.`
+
+## Requirements
+
+```text
+python>=3.8
+pandas
+numpy
+scikit-learn
+tensorflow>=2.6
+matplotlib (optional)
+```
+
+Install with pip:
+
+```bash
+pip install -r requirements.txt
+```
+
+## How to run (Colab / local)
+
+1. Upload `balanced_dataset.csv` to the notebook runtime (or change the `file_path` variable to your local file).
+2. Run the preprocessing cells to inspect and clean the data.
+3. Set `sequence_length` and `num_features` if using sequence input for Conv1D/GRU.
+4. Train the model by running the training cells.
+
+### Example changes you might need
+
+* Ensure your target labels are encoded (e.g., `to_categorical` for multi-class) and assigned to `y`.
+* If using scikit-learn models (the notebook has a couple of references to `rf_model`), replace with the intended Keras training calls (or keep both for comparison).
+
+## Model architecture (high level)
+
+1. Conv1D (feature extractor)
+2. MaxPooling
+3. Additional Conv1D + MaxPooling
+4. Flatten / or directly feed sequences to GRU
+5. GRU layers to learn temporal dependencies
+6. Dense layers with dropout, final softmax (multi-class) or sigmoid (binary)
+
+## Notes & suggestions
+
+* The notebook contains some duplicated/contradictory model-building blocks (multiple `Conv1D`/`GRU` additions and both `rf_model.fit` and `model.compile`). Consider cleaning it to a single clear training flow:
+
+  * Build preprocessing → prepare `X_train_scaled` shaped as `(samples, seq_len, features)` → compile Keras model → `model.fit(...)`.
+* When converting tabular features into sequences for Conv1D/GRU, choose a sensible `sequence_length` (for purely tabular data, you may reshape features as a single-step sequence: `(n_samples, n_features, 1)`).
+* Track experiments (weights, hyperparams) and save the model with `model.save('model.h5')`.
+
+## Evaluation
+
+* Use `accuracy_score` and `classification_report` for classical metrics.
+* Consider confusion matrix and ROC-AUC for binary/multi-class as applicable.
+
+## Example git commit message
+
+```
+Add hybrid 1D-CNN + GRU notebook, preprocessing, and baseline evaluation
+```
+
+## License
+
+Choose a license for your repo (MIT recommended for permissive open-source use). Example `LICENSE` file: MIT.
+
+---
+
+If you'd like, I can also:
+
+* create a short `requirements.txt` and `LICENSE` in this canvas,
+* produce a minimal `train.py` script from the notebook,
+* or generate a concise `description` and `topics` for your GitHub repo page.
+
+Tell me which one you want next and I'll add it.
